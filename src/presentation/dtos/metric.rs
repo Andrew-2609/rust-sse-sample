@@ -13,12 +13,11 @@ pub struct CreateMetricRequestDTO {
 impl CreateMetricRequestDTO {
     pub fn validate(&self) -> Result<(), PresentationError> {
         if self.name.trim().len() == 0 {
-            return Err(PresentationError::BadRequest(
-                "name must be present".into(),
-            ));
+            return Err(PresentationError::BadRequest("name must be present".into()));
         }
 
-        if self.input_frequency_in_seconds.is_some() && self.input_frequency_in_seconds <= 0.into()
+        if let Some(input_frequency_in_seconds) = self.input_frequency_in_seconds
+            && input_frequency_in_seconds <= 0
         {
             return Err(PresentationError::BadRequest(
                 "input frequency must be greater than zero".into(),
