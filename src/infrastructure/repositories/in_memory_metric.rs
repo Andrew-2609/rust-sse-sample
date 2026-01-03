@@ -1,13 +1,14 @@
 use std::{
     collections::HashMap,
-    io::{Error, ErrorKind},
     sync::{Arc, RwLock},
 };
 
 use async_trait::async_trait;
 use uuid::Uuid;
 
-use crate::domain::{entities::metric::MetricEntity, repositories::metric::MetricRepository};
+use crate::domain::{
+    entities::metric::MetricEntity, errors::DomainError, repositories::metric::MetricRepository,
+};
 
 pub struct InMemoryMetricRepository {
     store: Arc<RwLock<HashMap<String, MetricEntity>>>,
@@ -23,22 +24,22 @@ impl InMemoryMetricRepository {
 
 #[async_trait]
 impl MetricRepository for InMemoryMetricRepository {
-    async fn create_metric(&self, metric: MetricEntity) -> Result<MetricEntity, Error> {
+    async fn create_metric(&self, metric: MetricEntity) -> Result<MetricEntity, DomainError> {
         let mut map = self
             .store
             .write()
-            .map_err(|e| Error::new(ErrorKind::Other, format!("metric store poisoned: {e}")))?;
+            .map_err(|e| DomainError::Unknown(format!("metric store poisoned: {e}")))?;
 
         map.insert(metric.id.to_string(), metric.clone());
 
         Ok(metric)
     }
 
-    async fn get_metric_by_id(&self, id: Uuid) -> Result<Option<MetricEntity>, Error> {
+    async fn get_metric_by_id(&self, id: Uuid) -> Result<Option<MetricEntity>, DomainError> {
         let map = self
             .store
             .read()
-            .map_err(|e| Error::new(ErrorKind::Other, format!("metric store poisoned: {e}")))?;
+            .map_err(|e| DomainError::Unknown(format!("metric store poisoned: {e}")))?;
 
         let result = map.get(&id.to_string()).cloned();
 

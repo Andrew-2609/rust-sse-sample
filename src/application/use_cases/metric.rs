@@ -4,7 +4,10 @@ use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::{
-    domain::{repositories::metric::MetricRepository, use_cases::metric::MetricUseCase},
+    domain::{
+        errors::DomainError, repositories::metric::MetricRepository,
+        use_cases::metric::MetricUseCase,
+    },
     presentation::dtos::metric::GetMetricResponseDTO,
 };
 
@@ -25,7 +28,7 @@ impl MetricUseCase for MetricUseCaseImpl {
     async fn create_metric(
         &self,
         metric_dto: crate::presentation::dtos::metric::CreateMetricRequestDTO,
-    ) -> Result<crate::presentation::dtos::metric::CreateMetricResponseDTO, std::io::Error> {
+    ) -> Result<crate::presentation::dtos::metric::CreateMetricResponseDTO, DomainError> {
         let metric = self
             .metric_repository
             .create_metric(metric_dto.into())
@@ -37,7 +40,7 @@ impl MetricUseCase for MetricUseCaseImpl {
     async fn get_metric_by_id(
         &self,
         id: Uuid,
-    ) -> Result<Option<GetMetricResponseDTO>, std::io::Error> {
+    ) -> Result<Option<GetMetricResponseDTO>, DomainError> {
         let metric = self.metric_repository.get_metric_by_id(id).await?;
 
         if let Some(metric) = metric {

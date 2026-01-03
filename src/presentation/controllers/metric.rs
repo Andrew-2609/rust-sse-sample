@@ -22,7 +22,7 @@ pub async fn create_metric(
 
     match service.create_metric(payload.into_inner()).await {
         Ok(metric) => HttpResponse::Ok().json(metric),
-        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
     }
 }
 
@@ -36,7 +36,7 @@ pub async fn get_metric_by_id(
     };
 
     match service.get_metric_by_id(id).await {
-        Err(err) => HttpResponse::InternalServerError().json(err.to_string()),
+        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
         Ok(metric) => {
             if metric.is_none() {
                 let msg = format!("metric {} not found", id.to_string());
