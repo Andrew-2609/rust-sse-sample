@@ -3,7 +3,7 @@ use serde::{Serialize, ser::SerializeStruct};
 use crate::domain::errors::DomainError;
 
 pub enum PresentationError {
-    InvalidInput(String),
+    BadRequest(String),
     NotFound(String),
     Internal(String),
 }
@@ -11,7 +11,7 @@ pub enum PresentationError {
 impl PresentationError {
     fn message(&self) -> &str {
         match self {
-            Self::InvalidInput(msg) | Self::NotFound(msg) | Self::Internal(msg) => msg,
+            Self::BadRequest(msg) | Self::NotFound(msg) | Self::Internal(msg) => msg,
         }
     }
 }
