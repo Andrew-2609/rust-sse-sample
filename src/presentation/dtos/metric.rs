@@ -47,7 +47,7 @@ impl Into<MetricEntity> for CreateMetricRequestDTO {
 pub struct CreateMetricResponseDTO {
     pub id: String,
     pub name: String,
-    pub input_frequency_seconds: u64,
+    pub input_frequency_in_seconds: u64,
 }
 
 impl From<MetricEntity> for CreateMetricResponseDTO {
@@ -55,7 +55,7 @@ impl From<MetricEntity> for CreateMetricResponseDTO {
         Self {
             id: value.id.to_string(),
             name: value.name,
-            input_frequency_seconds: value.input_frequency.as_secs(),
+            input_frequency_in_seconds: value.input_frequency.as_secs(),
         }
     }
 }
@@ -64,7 +64,7 @@ impl From<MetricEntity> for CreateMetricResponseDTO {
 pub struct GetMetricResponseDTO {
     pub id: String,
     pub name: String,
-    pub input_frequency_seconds: u64,
+    pub input_frequency_in_seconds: u64,
 }
 
 impl From<MetricEntity> for GetMetricResponseDTO {
@@ -72,7 +72,7 @@ impl From<MetricEntity> for GetMetricResponseDTO {
         Self {
             id: value.id.to_string(),
             name: value.name,
-            input_frequency_seconds: value.input_frequency.as_secs(),
+            input_frequency_in_seconds: value.input_frequency.as_secs(),
         }
     }
 }
