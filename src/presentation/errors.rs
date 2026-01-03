@@ -8,19 +8,17 @@ pub enum PresentationError {
     Internal(String),
 }
 
+impl PresentationError {
+    fn message(&self) -> &str {
+        match self {
+            Self::InvalidInput(msg) | Self::NotFound(msg) | Self::Internal(msg) => msg,
+        }
+    }
+}
+
 impl std::fmt::Display for PresentationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            PresentationError::InvalidInput(msg) => {
-                write!(f, "{msg}")
-            }
-            Self::NotFound(msg) => {
-                write!(f, "{msg}")
-            }
-            Self::Internal(msg) => {
-                write!(f, "{msg}")
-            }
-        }
+        write!(f, "{}", self.message())
     }
 }
 
@@ -29,12 +27,7 @@ impl Serialize for PresentationError {
     where
         S: serde::Serializer,
     {
-        let message = match self {
-            Self::InvalidInput(msg) => msg,
-            Self::NotFound(msg) => msg,
-            Self::Internal(msg) => msg,
-        };
-
+        let message = self.message();
         let mut state = serializer.serialize_struct("PresentationError", 1)?;
         state.serialize_field("error", message)?;
         state.end()
