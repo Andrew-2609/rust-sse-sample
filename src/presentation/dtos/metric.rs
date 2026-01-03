@@ -1,8 +1,9 @@
 use std::time::Duration;
 
-use uuid::Uuid;
-
-use crate::{domain::entities::metric::MetricEntity, presentation::errors::PresentationError};
+use crate::{
+    domain::{entities::metric::MetricEntity, errors::DomainError},
+    presentation::errors::PresentationError,
+};
 
 #[derive(serde::Deserialize)]
 pub struct CreateMetricRequestDTO {
@@ -28,18 +29,13 @@ impl CreateMetricRequestDTO {
     }
 }
 
-impl Into<MetricEntity> for CreateMetricRequestDTO {
-    fn into(self) -> MetricEntity {
-        let input_frequency = match self.input_frequency_in_seconds {
-            Some(value) => Duration::from_secs(value),
-            None => Duration::ZERO,
-        };
+impl TryFrom<CreateMetricRequestDTO> for MetricEntity {
+    type Error = DomainError;
 
-        MetricEntity {
-            id: Uuid::now_v7(),
-            name: self.name,
-            input_frequency,
-        }
+    fn try_from(value: CreateMetricRequestDTO) -> Result<Self, Self::Error> {
+        let input_frequency = Duration::from_secs(value.input_frequency_in_seconds.unwrap_or(0));
+        let metric = MetricEntity::create(value.name, input_frequency)?;
+        Ok(metric)
     }
 }
 

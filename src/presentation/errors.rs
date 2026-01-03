@@ -5,13 +5,17 @@ use crate::domain::errors::DomainError;
 pub enum PresentationError {
     BadRequest(String),
     NotFound(String),
+    UnprocessableEntity(String),
     Internal(String),
 }
 
 impl PresentationError {
     fn message(&self) -> &str {
         match self {
-            Self::BadRequest(msg) | Self::NotFound(msg) | Self::Internal(msg) => msg,
+            Self::BadRequest(msg)
+            | Self::NotFound(msg)
+            | Self::UnprocessableEntity(msg)
+            | Self::Internal(msg) => msg,
         }
     }
 }
@@ -37,6 +41,7 @@ impl Serialize for PresentationError {
 impl From<DomainError> for PresentationError {
     fn from(value: DomainError) -> Self {
         match value {
+            DomainError::BusinessRuleViolation(msg) => Self::UnprocessableEntity(msg),
             DomainError::Unknown(msg) => Self::Internal(msg),
         }
     }

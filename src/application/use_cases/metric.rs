@@ -5,8 +5,8 @@ use uuid::Uuid;
 
 use crate::{
     domain::{
-        errors::DomainError, repositories::metric::MetricRepository,
-        use_cases::metric::MetricUseCase,
+        entities::metric::MetricEntity, errors::DomainError,
+        repositories::metric::MetricRepository, use_cases::metric::MetricUseCase,
     },
     presentation::dtos::metric::GetMetricResponseDTO,
 };
@@ -29,12 +29,9 @@ impl MetricUseCase for MetricUseCaseImpl {
         &self,
         metric_dto: crate::presentation::dtos::metric::CreateMetricRequestDTO,
     ) -> Result<crate::presentation::dtos::metric::CreateMetricResponseDTO, DomainError> {
-        let metric = self
-            .metric_repository
-            .create_metric(metric_dto.into())
-            .await?;
-
-        Ok(metric.into())
+        let metric: MetricEntity = metric_dto.try_into()?;
+        let result = self.metric_repository.create_metric(metric).await?;
+        Ok(result.into())
     }
 
     async fn get_metric_by_id(
