@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:8089
+
+### Create Metric
+# @prompt name
+# @prompt inputFrequencyInSeconds
+POST {{baseUrl}}/metrics
+Content-Type: application/json
+
+{
+    "name": "{{name}}",
+    "input_frequency_in_seconds": {{inputFrequencyInSeconds}}
+}
+
+### Get Metric by ID
+# @prompt metricId
+GET {{baseUrl}}/metrics/{{metricId}}
