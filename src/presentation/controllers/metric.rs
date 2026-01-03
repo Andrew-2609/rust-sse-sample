@@ -39,7 +39,7 @@ pub async fn get_metric_by_id(
         Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
         Ok(metric) => {
             if metric.is_none() {
-                let msg = format!("metric {} not found", id.to_string());
+                let msg = format!("metric {} not found", id);
                 return HttpResponse::NotFound().json(PresentationError::NotFound(msg));
             }
 
