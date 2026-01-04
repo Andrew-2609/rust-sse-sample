@@ -37,13 +37,13 @@ pub async fn get_metric_by_id(
 
     match service.get_metric_by_id(id).await {
         Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
-        Ok(metric) => {
-            if metric.is_none() {
+        Ok(result) => {
+            let Some(metric) = result else {
                 let msg = format!("metric {} not found", id);
                 return HttpResponse::NotFound().json(PresentationError::NotFound(msg));
-            }
+            };
 
-            HttpResponse::Ok().json(metric.unwrap())
+            HttpResponse::Ok().json(metric)
         }
     }
 }
