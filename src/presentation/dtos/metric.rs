@@ -17,14 +17,6 @@ impl CreateMetricRequestDTO {
             return Err(PresentationError::BadRequest("name must be present".into()));
         }
 
-        if let Some(input_frequency_in_seconds) = self.input_frequency_in_seconds
-            && input_frequency_in_seconds <= 0
-        {
-            return Err(PresentationError::BadRequest(
-                "input frequency must be greater than zero".into(),
-            ));
-        }
-
         Ok(())
     }
 }
