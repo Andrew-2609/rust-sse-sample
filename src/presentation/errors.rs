@@ -1,7 +1,9 @@
+use actix_web::{HttpResponse, ResponseError};
 use serde::{Serialize, ser::SerializeStruct};
 
 use crate::domain::errors::DomainError;
 
+#[derive(Debug)]
 pub enum PresentationError {
     BadRequest(String),
     NotFound(String),
@@ -39,5 +41,21 @@ impl From<DomainError> for PresentationError {
         match value {
             DomainError::BusinessRuleViolation(msg) => Self::UnprocessableEntity(msg),
         }
+    }
+}
+
+impl ResponseError for PresentationError {
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        use actix_web::http::StatusCode;
+
+        match self {
+            PresentationError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            PresentationError::NotFound(_) => StatusCode::NOT_FOUND,
+            PresentationError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
+        }
+    }
+
+    fn error_response(&self) -> actix_web::HttpResponse<actix_web::body::BoxBody> {
+        HttpResponse::build(self.status_code()).json(self)
     }
 }

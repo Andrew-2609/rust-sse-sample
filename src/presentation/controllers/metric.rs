@@ -15,42 +15,34 @@ pub type DynMetricUseCase = Arc<dyn MetricUseCase + Send + Sync>;
 pub async fn create_metric(
     service: web::Data<DynMetricUseCase>,
     payload: web::Json<CreateMetricRequestDTO>,
-) -> impl Responder {
-    if let Err(err) = payload.validate() {
-        return HttpResponse::BadRequest().json(err);
-    }
-
-    match service.create_metric(payload.into_inner()).await {
-        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
-        Ok(metric) => HttpResponse::Ok().json(metric),
-    }
+) -> Result<impl Responder, PresentationError> {
+    payload.validate()?;
+    let metric = service.create_metric(payload.into_inner()).await?;
+    Ok(HttpResponse::Ok().json(metric))
 }
 
 pub async fn get_metric_by_id(
     service: web::Data<DynMetricUseCase>,
     path: Path<String>,
-) -> impl Responder {
+) -> Result<impl Responder, PresentationError> {
     let id = match uuid::Uuid::try_parse(path.into_inner().as_str()) {
-        Err(_) => return HttpResponse::BadRequest().json("id is invalid"),
+        Err(_) => return Err(PresentationError::BadRequest("id is invalid".to_string())),
         Ok(value) => value,
     };
 
-    match service.get_metric_by_id(id).await {
-        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
-        Ok(result) => {
-            let Some(metric) = result else {
-                let msg = format!("metric {} not found", id);
-                return HttpResponse::NotFound().json(PresentationError::NotFound(msg));
-            };
+    let result = service.get_metric_by_id(id).await?;
 
-            HttpResponse::Ok().json(metric)
-        }
-    }
+    let Some(metric) = result else {
+        let msg = format!("metric {} not found", id);
+        return Err(PresentationError::NotFound(msg));
+    };
+
+    Ok(HttpResponse::Ok().json(metric))
 }
 
-pub async fn get_all_metrics(service: web::Data<DynMetricUseCase>) -> impl Responder {
-    match service.get_all_metrics().await {
-        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
-        Ok(result) => HttpResponse::Ok().json(result),
-    }
+pub async fn get_all_metrics(
+    service: web::Data<DynMetricUseCase>,
+) -> Result<impl Responder, PresentationError> {
+    let result = service.get_all_metrics().await?;
+    Ok(HttpResponse::Ok().json(result))
 }
