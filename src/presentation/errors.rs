@@ -47,9 +47,9 @@ impl Serialize for PresentationError {
 impl From<DomainError> for PresentationError {
     fn from(value: DomainError) -> Self {
         match value {
-            DomainError::InvalidMetricID(_) | DomainError::InvalidTimestamp(_) => {
-                Self::DomainValidation(value.message())
-            }
+            DomainError::InvalidMetricID(_)
+            | DomainError::InvalidMetricReadingID(_)
+            | DomainError::InvalidTimestamp(_) => Self::DomainValidation(value.message()),
             DomainError::BusinessRuleViolation(_) => Self::UnprocessableEntity(value.message()),
         }
     }

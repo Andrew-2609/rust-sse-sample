@@ -1,10 +1,11 @@
-use uuid::Uuid;
-
-use crate::domain::{errors::DomainError, value_objects::metric_id::MetricID};
+use crate::domain::{
+    errors::DomainError,
+    value_objects::{metric_id::MetricID, metric_reading_id::MetricReadingID},
+};
 
 #[derive(Clone)]
 pub struct MetricReadingEntity {
-    pub id: Uuid,
+    pub id: MetricReadingID,
     pub metric_id: MetricID,
     pub value: f64,
     pub timestamp: time::UtcDateTime,
@@ -23,7 +24,7 @@ impl MetricReadingEntity {
         }
 
         Ok(Self {
-            id: Uuid::now_v7(),
+            id: MetricReadingID::new(),
             metric_id,
             value,
             timestamp: timestamp.to_utc(),
