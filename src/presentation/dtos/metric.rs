@@ -13,7 +13,7 @@ pub struct CreateMetricRequestDTO {
 
 impl CreateMetricRequestDTO {
     pub fn validate(&self) -> Result<(), PresentationError> {
-        if self.name.trim().len() == 0 {
+        if self.name.trim().is_empty() {
             return Err(PresentationError::BadRequest("name must be present".into()));
         }
 

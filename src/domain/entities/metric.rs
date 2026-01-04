@@ -12,7 +12,7 @@ pub struct MetricEntity {
 
 impl MetricEntity {
     pub fn create(name: String, input_frequency: Duration) -> Result<Self, DomainError> {
-        if name.is_empty() {
+        if name.trim().is_empty() {
             return Err(DomainError::BusinessRuleViolation(
                 "metric name cannot be empty".to_string(),
             ));
