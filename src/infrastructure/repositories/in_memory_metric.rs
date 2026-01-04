@@ -10,16 +10,9 @@ use crate::domain::{
     entities::metric::MetricEntity, errors::DomainError, repositories::metric::MetricRepository,
 };
 
+#[derive(Default)]
 pub struct InMemoryMetricRepository {
     store: Arc<RwLock<HashMap<String, MetricEntity>>>,
-}
-
-impl InMemoryMetricRepository {
-    pub fn new() -> Self {
-        Self {
-            store: Arc::new(RwLock::new(HashMap::new())),
-        }
-    }
 }
 
 #[async_trait]

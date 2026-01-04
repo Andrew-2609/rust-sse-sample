@@ -16,7 +16,7 @@ use crate::{
 #[actix_web::main]
 
 async fn main() -> std::io::Result<()> {
-    let metric_repository: DynMetricRepository = Arc::new(InMemoryMetricRepository::new());
+    let metric_repository: DynMetricRepository = Arc::new(InMemoryMetricRepository::default());
     let metric_use_case: DynMetricUseCase = Arc::new(MetricUseCaseImpl::new(metric_repository));
 
     HttpServer::new(move || {
