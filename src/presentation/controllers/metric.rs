@@ -47,3 +47,10 @@ pub async fn get_metric_by_id(
         }
     }
 }
+
+pub async fn get_all_metrics(service: web::Data<DynMetricUseCase>) -> impl Responder {
+    match service.get_all_metrics().await {
+        Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
+        Ok(result) => HttpResponse::Ok().json(result),
+    }
+}

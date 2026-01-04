@@ -14,3 +14,6 @@ Content-Type: application/json
 ### Get Metric by ID
 # @prompt metricId
 GET {{baseUrl}}/metrics/{{metricId}}
+
+### Get All Metrics
+GET {{baseUrl}}/metrics

@@ -18,24 +18,20 @@ pub struct InMemoryMetricRepository {
 #[async_trait]
 impl MetricRepository for InMemoryMetricRepository {
     async fn create_metric(&self, metric: MetricEntity) -> Result<MetricEntity, DomainError> {
-        let mut map = self
-            .store
-            .write()
-            .map_err(|e| DomainError::Unknown(format!("metric store poisoned: {e}")))?;
-
+        let mut map = self.store.write()?;
         map.insert(metric.id.to_string(), metric.clone());
-
         Ok(metric)
     }
 
     async fn get_metric_by_id(&self, id: Uuid) -> Result<Option<MetricEntity>, DomainError> {
-        let map = self
-            .store
-            .read()
-            .map_err(|e| DomainError::Unknown(format!("metric store poisoned: {e}")))?;
-
+        let map = self.store.read()?;
         let result = map.get(&id.to_string()).cloned();
+        Ok(result)
+    }
 
+    async fn get_all_metrics(&self) -> Result<Vec<MetricEntity>, DomainError> {
+        let map = self.store.read()?;
+        let result: Vec<MetricEntity> = map.values().cloned().collect();
         Ok(result)
     }
 }

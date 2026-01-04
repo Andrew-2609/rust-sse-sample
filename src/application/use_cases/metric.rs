@@ -46,4 +46,14 @@ impl MetricUseCase for MetricUseCaseImpl {
 
         Ok(None)
     }
+
+    async fn get_all_metrics(&self) -> Result<Vec<GetMetricResponseDTO>, DomainError> {
+        Ok(self
+            .metric_repository
+            .get_all_metrics()
+            .await?
+            .iter()
+            .map(|metric| metric.to_owned().into())
+            .collect())
+    }
 }

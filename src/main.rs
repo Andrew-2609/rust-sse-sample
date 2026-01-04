@@ -10,7 +10,9 @@ use actix_web::{App, HttpServer, web};
 use crate::{
     application::use_cases::metric::{DynMetricRepository, MetricUseCaseImpl},
     infrastructure::repositories::in_memory_metric::InMemoryMetricRepository,
-    presentation::controllers::metric::{DynMetricUseCase, create_metric, get_metric_by_id},
+    presentation::controllers::metric::{
+        DynMetricUseCase, create_metric, get_all_metrics, get_metric_by_id,
+    },
 };
 
 #[actix_web::main]
@@ -33,6 +35,7 @@ fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/metrics")
             .route("", web::post().to(create_metric))
+            .route("", web::get().to(get_all_metrics))
             .route("{id}", web::get().to(get_metric_by_id)),
     );
 }

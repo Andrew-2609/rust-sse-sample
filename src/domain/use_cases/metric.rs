@@ -17,4 +17,6 @@ pub trait MetricUseCase {
 
     async fn get_metric_by_id(&self, id: Uuid)
     -> Result<Option<GetMetricResponseDTO>, DomainError>;
+
+    async fn get_all_metrics(&self) -> Result<Vec<GetMetricResponseDTO>, DomainError>;
 }
