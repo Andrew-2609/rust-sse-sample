@@ -18,12 +18,6 @@ impl MetricEntity {
             ));
         }
 
-        if input_frequency < Duration::ZERO {
-            return Err(DomainError::BusinessRuleViolation(
-                "duration cannot be lower than zero".to_string(),
-            ));
-        }
-
         Ok(Self {
             id: Uuid::now_v7(),
             name,
