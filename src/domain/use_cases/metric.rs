@@ -1,8 +1,7 @@
 use async_trait::async_trait;
-use uuid::Uuid;
 
 use crate::{
-    domain::errors::DomainError,
+    domain::{errors::DomainError, value_objects::metric_id::MetricID},
     presentation::dtos::metric::{
         CreateMetricRequestDTO, CreateMetricResponseDTO, GetMetricResponseDTO,
     },
@@ -15,8 +14,10 @@ pub trait MetricUseCase {
         metric_dto: CreateMetricRequestDTO,
     ) -> Result<CreateMetricResponseDTO, DomainError>;
 
-    async fn get_metric_by_id(&self, id: Uuid)
-    -> Result<Option<GetMetricResponseDTO>, DomainError>;
+    async fn get_metric_by_id(
+        &self,
+        id: MetricID,
+    ) -> Result<Option<GetMetricResponseDTO>, DomainError>;
 
     async fn get_all_metrics(&self) -> Result<Vec<GetMetricResponseDTO>, DomainError>;
 }

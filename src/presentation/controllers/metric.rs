@@ -6,7 +6,7 @@ use actix_web::{
 };
 
 use crate::{
-    domain::use_cases::metric::MetricUseCase,
+    domain::{use_cases::metric::MetricUseCase, value_objects::metric_id::MetricID},
     presentation::{dtos::metric::CreateMetricRequestDTO, errors::PresentationError},
 };
 
@@ -25,12 +25,9 @@ pub async fn get_metric_by_id(
     service: web::Data<DynMetricUseCase>,
     path: Path<String>,
 ) -> Result<impl Responder, PresentationError> {
-    let id = match uuid::Uuid::try_parse(path.into_inner().as_str()) {
-        Err(_) => return Err(PresentationError::BadRequest("id is invalid".to_string())),
-        Ok(value) => value,
-    };
+    let id: MetricID = path.into_inner().parse()?;
 
-    let result = service.get_metric_by_id(id).await?;
+    let result = service.get_metric_by_id(id.clone()).await?;
 
     let Some(metric) = result else {
         let msg = format!("metric {} not found", id);

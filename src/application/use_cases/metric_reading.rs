@@ -43,7 +43,7 @@ impl MetricReadingUseCase for MetricReadingUseCaseImpl {
 
         if let None = self
             .metric_repository
-            .get_metric_by_id(metric_reading.metric_id)
+            .get_metric_by_id(metric_reading.metric_id.clone())
             .await?
         {
             return Err(DomainError::BusinessRuleViolation(format!(

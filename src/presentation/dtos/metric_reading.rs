@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
-use uuid::Uuid;
 
 use crate::{
-    domain::{entities::metric_reading::MetricReadingEntity, errors::DomainError},
+    domain::{
+        entities::metric_reading::MetricReadingEntity, errors::DomainError,
+        value_objects::metric_id::MetricID,
+    },
     presentation::errors::PresentationError,
 };
 
@@ -16,21 +18,15 @@ pub struct CreateMetricReadingRequestDTO {
 
 impl CreateMetricReadingRequestDTO {
     pub fn validate(&self) -> Result<(), PresentationError> {
-        let Ok(metric_id) = Uuid::try_parse(&self.metric_id) else {
+        if self.metric_id.trim().is_empty() {
             return Err(PresentationError::BadRequest(
-                "metric_id is not a valid uuid".into(),
+                "metric_id cannot be empty".into(),
             ));
-        };
+        }
 
-        let Some(version) = metric_id.get_version() else {
+        if self.value < 0.0 {
             return Err(PresentationError::BadRequest(
-                "metric_id is not a valid v7 uuid".into(),
-            ));
-        };
-
-        if !version.eq(&uuid::Version::SortRand) {
-            return Err(PresentationError::BadRequest(
-                "metric_id is not a valid v7 uuid".into(),
+                "value must be greater than 0".into(),
             ));
         }
 
@@ -42,12 +38,7 @@ impl TryFrom<CreateMetricReadingRequestDTO> for MetricReadingEntity {
     type Error = DomainError;
 
     fn try_from(value: CreateMetricReadingRequestDTO) -> Result<Self, Self::Error> {
-        let Ok(metric_id) = Uuid::parse_str(&value.metric_id) else {
-            // TODO: this awkward domain error will be removed when metric_id becomes a VO
-            return Err(DomainError::BusinessRuleViolation(
-                "invalid metric_id".into(),
-            ));
-        };
+        let metric_id: MetricID = value.metric_id.parse()?;
 
         let timestamp: OffsetDateTime = match value.timestamp {
             None => OffsetDateTime::now_utc(),

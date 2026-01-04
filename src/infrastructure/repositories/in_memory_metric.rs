@@ -1,5 +1,6 @@
 use crate::domain::{
     entities::metric::MetricEntity, errors::DomainError, repositories::metric::MetricRepository,
+    value_objects::metric_id::MetricID,
 };
 
 use async_trait::async_trait;
@@ -7,8 +8,6 @@ use async_trait::async_trait;
 use std::{collections::HashMap, sync::Arc};
 
 use tokio::sync;
-
-use uuid::Uuid;
 
 #[derive(Default)]
 pub struct InMemoryMetricRepository {
@@ -23,7 +22,7 @@ impl MetricRepository for InMemoryMetricRepository {
         Ok(metric)
     }
 
-    async fn get_metric_by_id(&self, id: Uuid) -> Result<Option<MetricEntity>, DomainError> {
+    async fn get_metric_by_id(&self, id: MetricID) -> Result<Option<MetricEntity>, DomainError> {
         let map = self.store.read().await;
         let result = map.get(&id.to_string()).cloned();
         Ok(result)

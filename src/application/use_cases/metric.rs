@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use uuid::Uuid;
 
 use crate::{
     domain::{
         entities::metric::MetricEntity, errors::DomainError,
         repositories::metric::MetricRepository, use_cases::metric::MetricUseCase,
+        value_objects::metric_id::MetricID,
     },
     presentation::dtos::metric::GetMetricResponseDTO,
 };
@@ -36,7 +36,7 @@ impl MetricUseCase for MetricUseCaseImpl {
 
     async fn get_metric_by_id(
         &self,
-        id: Uuid,
+        id: MetricID,
     ) -> Result<Option<GetMetricResponseDTO>, DomainError> {
         let metric = self.metric_repository.get_metric_by_id(id).await?;
 

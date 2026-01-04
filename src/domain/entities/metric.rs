@@ -1,11 +1,10 @@
 use std::time::Duration;
-use uuid::Uuid;
 
-use crate::domain::errors::DomainError;
+use crate::domain::{errors::DomainError, value_objects::metric_id::MetricID};
 
 #[derive(Clone)]
 pub struct MetricEntity {
-    pub id: Uuid,
+    pub id: MetricID,
     pub name: String,
     pub input_frequency: Duration,
 }
@@ -19,7 +18,7 @@ impl MetricEntity {
         }
 
         Ok(Self {
-            id: Uuid::now_v7(),
+            id: MetricID::new(),
             name,
             input_frequency,
         })

@@ -1,18 +1,18 @@
 use uuid::Uuid;
 
-use crate::domain::errors::DomainError;
+use crate::domain::{errors::DomainError, value_objects::metric_id::MetricID};
 
 #[derive(Clone)]
 pub struct MetricReadingEntity {
     pub id: Uuid,
-    pub metric_id: Uuid,
+    pub metric_id: MetricID,
     pub value: f64,
     pub timestamp: time::UtcDateTime,
 }
 
 impl MetricReadingEntity {
     pub fn create(
-        metric_id: Uuid,
+        metric_id: MetricID,
         value: f64,
         timestamp: time::OffsetDateTime,
     ) -> Result<MetricReadingEntity, DomainError> {

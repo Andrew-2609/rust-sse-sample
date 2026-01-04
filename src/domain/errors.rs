@@ -1,13 +1,15 @@
 use std::fmt;
 
 pub enum DomainError {
+    InvalidMetricID(String),
     BusinessRuleViolation(String),
 }
 
 impl DomainError {
-    fn message(&self) -> &str {
+    pub fn message(&self) -> String {
         match self {
-            Self::BusinessRuleViolation(msg) => msg,
+            Self::InvalidMetricID(id) => format!("metric_id {id} is invalid"),
+            Self::BusinessRuleViolation(msg) => msg.clone(),
         }
     }
 }
