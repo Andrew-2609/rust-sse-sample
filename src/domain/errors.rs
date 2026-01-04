@@ -1,14 +1,13 @@
-use std::{fmt, sync::PoisonError};
+use std::fmt;
 
 pub enum DomainError {
     BusinessRuleViolation(String),
-    Unknown(String),
 }
 
 impl DomainError {
     fn message(&self) -> &str {
         match self {
-            Self::BusinessRuleViolation(msg) | Self::Unknown(msg) => msg,
+            Self::BusinessRuleViolation(msg) => msg,
         }
     }
 }
@@ -16,11 +15,5 @@ impl DomainError {
 impl fmt::Display for DomainError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.message())
-    }
-}
-
-impl<T> From<PoisonError<T>> for DomainError {
-    fn from(value: PoisonError<T>) -> Self {
-        Self::Unknown(format!("store is poisoned: {}", value.to_string()))
     }
 }
