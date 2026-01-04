@@ -19,15 +19,11 @@ pub struct CreateMetricReadingRequestDTO {
 impl CreateMetricReadingRequestDTO {
     pub fn validate(&self) -> Result<(), PresentationError> {
         if self.metric_id.trim().is_empty() {
-            return Err(PresentationError::BadRequest(
-                "metric_id cannot be empty".into(),
-            ));
+            return Err(PresentationError::Empty("metric_id".into()));
         }
 
         if self.value < 0.0 {
-            return Err(PresentationError::BadRequest(
-                "value must be greater than 0".into(),
-            ));
+            return Err(PresentationError::NonNegative("value".into()));
         }
 
         Ok(())
@@ -47,9 +43,7 @@ impl TryFrom<CreateMetricReadingRequestDTO> for MetricReadingEntity {
                     &input_timestamp,
                     &time::format_description::well_known::Rfc3339,
                 ) else {
-                    return Err(DomainError::BusinessRuleViolation(
-                        "invalid timestamp".into(),
-                    ));
+                    return Err(DomainError::InvalidTimestamp(input_timestamp));
                 };
 
                 timestamp

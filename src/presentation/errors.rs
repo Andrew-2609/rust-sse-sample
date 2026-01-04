@@ -5,15 +5,23 @@ use crate::domain::errors::DomainError;
 
 #[derive(Debug)]
 pub enum PresentationError {
-    BadRequest(String),
     NotFound(String),
     UnprocessableEntity(String),
+    DomainValidation(String),
+    Empty(String),
+    NonNegative(String),
 }
 
 impl PresentationError {
-    fn message(&self) -> &str {
+    fn message(&self) -> String {
         match self {
-            Self::BadRequest(msg) | Self::NotFound(msg) | Self::UnprocessableEntity(msg) => msg,
+            Self::DomainValidation(msg) | Self::NotFound(msg) | Self::UnprocessableEntity(msg) => {
+                msg.into()
+            }
+            Self::Empty(field) => format!("field '{field}' cannot be empty"),
+            Self::NonNegative(field) => {
+                format!("field '{field}' must be greater than or equal to 0")
+            }
         }
     }
 }
@@ -31,7 +39,7 @@ impl Serialize for PresentationError {
     {
         let message = self.message();
         let mut state = serializer.serialize_struct("PresentationError", 1)?;
-        state.serialize_field("error", message)?;
+        state.serialize_field("error", message.as_str())?;
         state.end()
     }
 }
@@ -39,7 +47,9 @@ impl Serialize for PresentationError {
 impl From<DomainError> for PresentationError {
     fn from(value: DomainError) -> Self {
         match value {
-            DomainError::InvalidMetricID(_) => Self::BadRequest(value.message()),
+            DomainError::InvalidMetricID(_) | DomainError::InvalidTimestamp(_) => {
+                Self::DomainValidation(value.message())
+            }
             DomainError::BusinessRuleViolation(_) => Self::UnprocessableEntity(value.message()),
         }
     }
@@ -50,7 +60,9 @@ impl ResponseError for PresentationError {
         use actix_web::http::StatusCode;
 
         match self {
-            PresentationError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            PresentationError::DomainValidation(_)
+            | PresentationError::Empty(_)
+            | PresentationError::NonNegative(_) => StatusCode::BAD_REQUEST,
             PresentationError::NotFound(_) => StatusCode::NOT_FOUND,
             PresentationError::UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
         }
