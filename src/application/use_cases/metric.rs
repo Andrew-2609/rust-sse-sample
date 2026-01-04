@@ -53,7 +53,7 @@ impl MetricUseCase for MetricUseCaseImpl {
             .get_all_metrics()
             .await?
             .iter()
-            .map(|metric| metric.to_owned().into())
+            .map(|metric| metric.clone().into())
             .collect())
     }
 }
