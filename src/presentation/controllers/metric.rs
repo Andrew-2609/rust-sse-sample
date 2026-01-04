@@ -21,8 +21,8 @@ pub async fn create_metric(
     }
 
     match service.create_metric(payload.into_inner()).await {
-        Ok(metric) => HttpResponse::Ok().json(metric),
         Err(err) => HttpResponse::InternalServerError().json(PresentationError::from(err)),
+        Ok(metric) => HttpResponse::Ok().json(metric),
     }
 }
 
